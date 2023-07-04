@@ -63,10 +63,18 @@ host    all          all            0.0.0.0/0  md5"
 # boot app automatically vm-gifts-yovel-web
 1. crontab -e
 2. @reboot /usr/bin/python3 /home/Azureuser123/flaskApp/azureApp.py
-3. sudo reboot 
+3. sudo reboot
+
+# setup postgres data disc
+1. sudo service postgresql stop
+2. sudo mv ~/../../var/lib/postgresql/9.3/main ~/../../media/postgres-data
+3. sudo nano ../../etc/postgresql/9.3/main/postgresql.conf
+4. data_directory = '/media/postgres-data/main'
+5. sudo service postgresql start
    
 # credits:
 1. https://www.postgresql.org/download/linux/ubuntu/
 2. https://devopscube.com/install-postgresql-on-ubuntu/
 3. chatGPT
 4. https://www.simplified.guide/linux/automatically-run-program-on-startup#running-a-program-automatically-on-linux-startup-via-cron
+5. https://cloud.google.com/community/tutorials/setting-up-postgres-data-disk
