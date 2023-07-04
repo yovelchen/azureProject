@@ -1,6 +1,11 @@
 # azure_project
 [Module 07 - Azure Project.pdf](https://github.com/yovelchen/azure_project/files/11929569/Module.07.-.Azure.Project.pdf)
 
+# azure set up 
+https://github.com/yovelchen/azureProject/tree/main/MyExportedTemplate-rg-gifts-yovel-we
+# create and attach disk
+https://learn.microsoft.com/en-us/azure/virtual-machines/linux/attach-disk-portal?tabs=ubuntu
+
 # steps vm-gifts-yovel-db
 
 - install postgres:
@@ -32,7 +37,7 @@
 4. ss -nlt >> * 
 
 - allow client connections to all databases:
-1. sudo vi /etc/postgresql/14/main/pg_hba.conf >> add line at the end of the file:
+1. sudo vi /etc/postgresql/14/main/pg_hba.conf >> add line at the end of the file: change peer to md5
 "#Allow client connections to all data bases and users 
 host    all          all            0.0.0.0/0  md5"
 
