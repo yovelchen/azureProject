@@ -64,3 +64,4 @@ host    all          all            0.0.0.0/0  md5"
 1. https://www.postgresql.org/download/linux/ubuntu/
 2. https://devopscube.com/install-postgresql-on-ubuntu/
 3. chatGPT
+4. https://www.simplified.guide/linux/automatically-run-program-on-startup#running-a-program-automatically-on-linux-startup-via-cron
