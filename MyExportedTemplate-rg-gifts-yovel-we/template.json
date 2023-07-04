@@ -2,12 +2,16 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "disks_postgresql_db_gifts_yovel_name": {
+            "defaultValue": "postgresql-db-gifts-yovel",
+            "type": "String"
+        },
         "virtualNetworks_vnet_gifts_yovel_name": {
             "defaultValue": "vnet-gifts-yovel",
             "type": "String"
         },
-        "virtualMachines_vm_gifts_yovel_db_name": {
-            "defaultValue": "vm-gifts-yovel-db",
+        "virtualMachines_vm_yovel_gifts_db_name": {
+            "defaultValue": "vm-yovel-gifts-db",
             "type": "String"
         },
         "virtualMachines_vm_gifts_yovel_web_name": {
@@ -16,6 +20,10 @@
         },
         "networkInterfaces_vm_gifts_yovel_db210_name": {
             "defaultValue": "vm-gifts-yovel-db210",
+            "type": "String"
+        },
+        "networkInterfaces_vm_yovel_gifts_db939_name": {
+            "defaultValue": "vm-yovel-gifts-db939",
             "type": "String"
         },
         "publicIPAddresses_vm_gifts_yovel_db_ip_name": {
@@ -34,6 +42,10 @@
             "defaultValue": "vm-gifts-yovel-db-nsg",
             "type": "String"
         },
+        "networkSecurityGroups_vm_yovel_gifts_db_nsg_name": {
+            "defaultValue": "vm-yovel-gifts-db-nsg",
+            "type": "String"
+        },
         "networkSecurityGroups_vm_gifts_yovel_web_nsg_name": {
             "defaultValue": "vm-gifts-yovel-web-nsg",
             "type": "String"
@@ -41,6 +53,30 @@
     },
     "variables": {},
     "resources": [
+        {
+            "type": "Microsoft.Compute/disks",
+            "apiVersion": "2022-07-02",
+            "name": "[parameters('disks_postgresql_db_gifts_yovel_name')]",
+            "location": "westeurope",
+            "sku": {
+                "name": "StandardSSD_ZRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": 4,
+                "diskIOPSReadWrite": 500,
+                "diskMBpsReadWrite": 60,
+                "encryption": {
+                    "type": "EncryptionAtRestWithPlatformKey"
+                },
+                "networkAccessPolicy": "AllowAll",
+                "publicNetworkAccess": "Enabled",
+                "diskState": "Unattached"
+            }
+        },
         {
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2022-11-01",
@@ -56,8 +92,8 @@
                             "protocol": "TCP",
                             "sourcePortRange": "*",
                             "destinationPortRange": "22",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
+                            "sourceAddressPrefix": "10.0.1.0/24",
+                            "destinationAddressPrefix": "10.0.2.0/24",
                             "access": "Allow",
                             "priority": 300,
                             "direction": "Inbound",
@@ -138,6 +174,35 @@
             }
         },
         {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2022-11-01",
+            "name": "[parameters('networkSecurityGroups_vm_yovel_gifts_db_nsg_name')]",
+            "location": "westeurope",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "SSH",
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_vm_yovel_gifts_db_nsg_name'), 'SSH')]",
+                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 300,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ]
+            }
+        },
+        {
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2022-11-01",
             "name": "[parameters('publicIPAddresses_vm_gifts_yovel_db_ip_name')]",
@@ -174,95 +239,6 @@
         {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2023-03-01",
-            "name": "[parameters('virtualMachines_vm_gifts_yovel_db_name')]",
-            "location": "westeurope",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_gifts_yovel_db210_name'))]"
-            ],
-            "properties": {
-                "hardwareProfile": {
-                    "vmSize": "Standard_B1ms"
-                },
-                "storageProfile": {
-                    "imageReference": {
-                        "publisher": "canonical",
-                        "offer": "0001-com-ubuntu-server-focal",
-                        "sku": "20_04-lts-gen2",
-                        "version": "latest"
-                    },
-                    "osDisk": {
-                        "osType": "Linux",
-                        "name": "[concat(parameters('virtualMachines_vm_gifts_yovel_db_name'), '_OsDisk_1_b9a80b68a1b240089c65be568dbe632a')]",
-                        "createOption": "FromImage",
-                        "caching": "ReadWrite",
-                        "managedDisk": {
-                            "storageAccountType": "Standard_LRS",
-                            "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('virtualMachines_vm_gifts_yovel_db_name'), '_OsDisk_1_b9a80b68a1b240089c65be568dbe632a'))]"
-                        },
-                        "deleteOption": "Delete",
-                        "diskSizeGB": 30
-                    },
-                    "dataDisks": [
-                        {
-                            "lun": 0,
-                            "name": "PostgreSQL-db-gifts-yovel",
-                            "createOption": "Attach",
-                            "caching": "ReadWrite",
-                            "writeAcceleratorEnabled": false,
-                            "managedDisk": {
-                                "storageAccountType": "StandardSSD_ZRS",
-                                "id": "[resourceId('Microsoft.Compute/disks', 'postgresql-db-gifts-yovel')]"
-                            },
-                            "deleteOption": "Detach",
-                            "diskSizeGB": 4,
-                            "toBeDetached": false
-                        }
-                    ],
-                    "diskControllerType": "SCSI"
-                },
-                "osProfile": {
-                    "computerName": "[parameters('virtualMachines_vm_gifts_yovel_db_name')]",
-                    "adminUsername": "Azureuser123",
-                    "linuxConfiguration": {
-                        "disablePasswordAuthentication": false,
-                        "provisionVMAgent": true,
-                        "patchSettings": {
-                            "patchMode": "ImageDefault",
-                            "assessmentMode": "ImageDefault"
-                        },
-                        "enableVMAgentPlatformUpdates": false
-                    },
-                    "secrets": [],
-                    "allowExtensionOperations": true,
-                    "requireGuestProvisionSignal": true
-                },
-                "securityProfile": {
-                    "uefiSettings": {
-                        "secureBootEnabled": true,
-                        "vTpmEnabled": true
-                    },
-                    "securityType": "TrustedLaunch"
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_gifts_yovel_db210_name'))]",
-                            "properties": {
-                                "deleteOption": "Detach"
-                            }
-                        }
-                    ]
-                },
-                "diagnosticsProfile": {
-                    "bootDiagnostics": {
-                        "enabled": true
-                    }
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2023-03-01",
             "name": "[parameters('virtualMachines_vm_gifts_yovel_web_name')]",
             "location": "westeurope",
             "dependsOn": [
@@ -285,11 +261,9 @@
                         "createOption": "FromImage",
                         "caching": "ReadWrite",
                         "managedDisk": {
-                            "storageAccountType": "Standard_LRS",
                             "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('virtualMachines_vm_gifts_yovel_web_name'), '_OsDisk_1_410c564497cb44c684c3343bb089a0a5'))]"
                         },
-                        "deleteOption": "Delete",
-                        "diskSizeGB": 30
+                        "deleteOption": "Delete"
                     },
                     "dataDisks": [],
                     "diskControllerType": "SCSI"
@@ -335,18 +309,88 @@
             }
         },
         {
-            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2023-03-01",
-            "name": "[concat(parameters('virtualMachines_vm_gifts_yovel_db_name'), '/AzureNetworkWatcherExtension')]",
+            "name": "[parameters('virtualMachines_vm_yovel_gifts_db_name')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachines_vm_gifts_yovel_db_name'))]"
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_yovel_gifts_db939_name'))]"
             ],
             "properties": {
-                "autoUpgradeMinorVersion": true,
-                "publisher": "Microsoft.Azure.NetworkWatcher",
-                "type": "NetworkWatcherAgentLinux",
-                "typeHandlerVersion": "1.4"
+                "hardwareProfile": {
+                    "vmSize": "Standard_B1ms"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "canonical",
+                        "offer": "0001-com-ubuntu-server-focal",
+                        "sku": "20_04-lts-gen2",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[concat(parameters('virtualMachines_vm_yovel_gifts_db_name'), '_OsDisk_1_6a26f050ad424868a82580942b27659c')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('virtualMachines_vm_yovel_gifts_db_name'), '_OsDisk_1_6a26f050ad424868a82580942b27659c'))]"
+                        },
+                        "deleteOption": "Delete"
+                    },
+                    "dataDisks": [
+                        {
+                            "lun": 0,
+                            "name": "PostgreSQL-db-yovel-gifts",
+                            "createOption": "Attach",
+                            "caching": "ReadWrite",
+                            "writeAcceleratorEnabled": false,
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks', 'postgresql-db-yovel-gifts')]"
+                            },
+                            "deleteOption": "Detach",
+                            "toBeDetached": false
+                        }
+                    ],
+                    "diskControllerType": "SCSI"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_vm_yovel_gifts_db_name')]",
+                    "adminUsername": "Azureuser123",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false,
+                        "provisionVMAgent": true,
+                        "patchSettings": {
+                            "patchMode": "ImageDefault",
+                            "assessmentMode": "ImageDefault"
+                        },
+                        "enableVMAgentPlatformUpdates": false
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true,
+                    "requireGuestProvisionSignal": true
+                },
+                "securityProfile": {
+                    "uefiSettings": {
+                        "secureBootEnabled": true,
+                        "vTpmEnabled": true
+                    },
+                    "securityType": "TrustedLaunch"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_yovel_gifts_db939_name'))]",
+                            "properties": {
+                                "deleteOption": "Detach"
+                            }
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                }
             }
         },
         {
@@ -419,8 +463,8 @@
                 "protocol": "TCP",
                 "sourcePortRange": "*",
                 "destinationPortRange": "22",
-                "sourceAddressPrefix": "*",
-                "destinationAddressPrefix": "*",
+                "sourceAddressPrefix": "10.0.1.0/24",
+                "destinationAddressPrefix": "10.0.2.0/24",
                 "access": "Allow",
                 "priority": 300,
                 "direction": "Inbound",
@@ -450,6 +494,110 @@
                 "destinationPortRanges": [],
                 "sourceAddressPrefixes": [],
                 "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2022-11-01",
+            "name": "[concat(parameters('networkSecurityGroups_vm_yovel_gifts_db_nsg_name'), '/SSH')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_yovel_gifts_db_nsg_name'))]"
+            ],
+            "properties": {
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "destinationPortRange": "22",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 300,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2022-11-01",
+            "name": "[parameters('networkInterfaces_vm_gifts_yovel_db210_name')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_vnet_gifts_yovel_name'), 'snet-gifts-yovel-db')]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_gifts_yovel_db_nsg_name'))]"
+            ],
+            "kind": "Regular",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_gifts_yovel_db210_name')), '/ipConfigurations/ipconfig1')]",
+                        "etag": "W/\"3c2e13b0-6dfa-47d4-9821-60e82f776655\"",
+                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "privateIPAddress": "10.0.2.4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_vnet_gifts_yovel_name'), 'snet-gifts-yovel-db')]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "disableTcpStateTracking": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_gifts_yovel_db_nsg_name'))]"
+                },
+                "nicType": "Standard"
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2022-11-01",
+            "name": "[parameters('networkInterfaces_vm_yovel_gifts_db939_name')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_vnet_gifts_yovel_name'), 'snet-gifts-yovel-db')]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_yovel_gifts_db_nsg_name'))]"
+            ],
+            "kind": "Regular",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_yovel_gifts_db939_name')), '/ipConfigurations/ipconfig1')]",
+                        "etag": "W/\"9345ec26-b69f-4185-a9a2-28c870603796\"",
+                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "privateIPAddress": "10.0.2.5",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_vnet_gifts_yovel_name'), 'snet-gifts-yovel-db')]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "disableTcpStateTracking": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_yovel_gifts_db_nsg_name'))]"
+                },
+                "nicType": "Standard"
             }
         },
         {
@@ -544,69 +692,6 @@
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2022-11-01",
-            "name": "[parameters('networkInterfaces_vm_gifts_yovel_db210_name')]",
-            "location": "westeurope",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_vm_gifts_yovel_db_ip_name'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_vnet_gifts_yovel_name'), 'snet-gifts-yovel-db')]",
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_gifts_yovel_db_nsg_name'))]"
-            ],
-            "kind": "Regular",
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_gifts_yovel_db210_name')), '/ipConfigurations/ipconfig1')]",
-                        "etag": "W/\"64ad3a5b-d43a-4a86-8337-f1bd8d7d4fbf\"",
-                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
-                        "properties": {
-                            "provisioningState": "Succeeded",
-                            "privateIPAddress": "10.0.2.4",
-                            "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": {
-                                "name": "vm-gifts-yovel-db-ip",
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_vm_gifts_yovel_db_ip_name'))]",
-                                "properties": {
-                                    "provisioningState": "Succeeded",
-                                    "resourceGuid": "8e149d9c-06c6-4935-ba1f-d254676ef9af",
-                                    "publicIPAddressVersion": "IPv4",
-                                    "publicIPAllocationMethod": "Dynamic",
-                                    "idleTimeoutInMinutes": 4,
-                                    "ipTags": [],
-                                    "ipConfiguration": {
-                                        "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_gifts_yovel_db210_name')), '/ipConfigurations/ipconfig1')]"
-                                    },
-                                    "deleteOption": "Detach"
-                                },
-                                "type": "Microsoft.Network/publicIPAddresses",
-                                "sku": {
-                                    "name": "Basic",
-                                    "tier": "Regional"
-                                }
-                            },
-                            "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_vnet_gifts_yovel_name'), 'snet-gifts-yovel-db')]"
-                            },
-                            "primary": true,
-                            "privateIPAddressVersion": "IPv4"
-                        }
-                    }
-                ],
-                "dnsSettings": {
-                    "dnsServers": []
-                },
-                "enableAcceleratedNetworking": false,
-                "enableIPForwarding": false,
-                "disableTcpStateTracking": false,
-                "networkSecurityGroup": {
-                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vm_gifts_yovel_db_nsg_name'))]"
-                },
-                "nicType": "Standard"
-            }
-        },
-        {
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2022-11-01",
             "name": "[parameters('networkInterfaces_vm_gifts_yovel_web877_name')]",
             "location": "westeurope",
             "dependsOn": [
@@ -620,7 +705,7 @@
                     {
                         "name": "ipconfig1",
                         "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_gifts_yovel_web877_name')), '/ipConfigurations/ipconfig1')]",
-                        "etag": "W/\"0b428e45-0b7e-4a7d-a2d8-2720dcb184b0\"",
+                        "etag": "W/\"cc780c86-ff85-4ff5-b49f-a215e360d1fb\"",
                         "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
                         "properties": {
                             "provisioningState": "Succeeded",
@@ -631,7 +716,7 @@
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_vm_gifts_yovel_web_ip_name'))]",
                                 "properties": {
                                     "provisioningState": "Succeeded",
-                                    "resourceGuid": "781ac75f-6a51-44ed-b168-98b0405e04ed",
+                                    "resourceGuid": "7128f167-038a-414c-9210-a86a415f0098",
                                     "publicIPAddressVersion": "IPv4",
                                     "publicIPAllocationMethod": "Dynamic",
                                     "idleTimeoutInMinutes": 4,
