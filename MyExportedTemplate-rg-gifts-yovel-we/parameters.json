@@ -2,16 +2,22 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "disks_postgresql_db_gifts_yovel_name": {
+            "value": null
+        },
         "virtualNetworks_vnet_gifts_yovel_name": {
             "value": null
         },
-        "virtualMachines_vm_gifts_yovel_db_name": {
+        "virtualMachines_vm_yovel_gifts_db_name": {
             "value": null
         },
         "virtualMachines_vm_gifts_yovel_web_name": {
             "value": null
         },
         "networkInterfaces_vm_gifts_yovel_db210_name": {
+            "value": null
+        },
+        "networkInterfaces_vm_yovel_gifts_db939_name": {
             "value": null
         },
         "publicIPAddresses_vm_gifts_yovel_db_ip_name": {
@@ -24,6 +30,9 @@
             "value": null
         },
         "networkSecurityGroups_vm_gifts_yovel_db_nsg_name": {
+            "value": null
+        },
+        "networkSecurityGroups_vm_yovel_gifts_db_nsg_name": {
             "value": null
         },
         "networkSecurityGroups_vm_gifts_yovel_web_nsg_name": {
