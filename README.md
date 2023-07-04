@@ -40,7 +40,7 @@ host    all          all            0.0.0.0/0  md5"
 2. psql -h 10.0.2.4 -U postgres
 3. mkdir flaskApp 
 4. cd flaskApp 
-5. create vim azureApp.py >> file azureApp.py :  https://github.com/yovelchen/azure_project/blob/main/azureApp.py
+5. create vim azureApp.py >> file azureApp.py :  https://github.com/yovelchen/azureProject/blob/main/azureApp.py
 6. pip install psycopg2-binary
 7. python3 azureApp.py
 
