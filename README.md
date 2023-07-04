@@ -59,6 +59,11 @@ host    all          all            0.0.0.0/0  md5"
 # check if data is saved in vm-gifts-yovel-db
 1. \c flask_db
 2. SELECT * FROM table_gifts_yovel;
+
+# boot app automatically
+1. crontab -e
+2. @reboot /usr/bin/python3 /home/Azureuser123/flaskApp/azureApp.py
+3. sudo reboot 
    
 # credits:
 1. https://www.postgresql.org/download/linux/ubuntu/
