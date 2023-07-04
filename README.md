@@ -5,10 +5,10 @@
 
 - install postgres:
 
-1.sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt   $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-3. wget --quiet -O -   https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-4. sudo apt-get update
-5. sudo apt-get -y install postgresql
+1. sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt   $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+2. wget --quiet -O -   https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+3. sudo apt-get update
+4. sudo apt-get -y install postgresql
 
 - create user: 
 1. sudo -i -u postgres
