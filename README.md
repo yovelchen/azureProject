@@ -60,7 +60,7 @@ host    all          all            0.0.0.0/0  md5"
 1. \c flask_db
 2. SELECT * FROM table_gifts_yovel;
 
-# boot app automatically
+# boot app automatically vm-gifts-yovel-web
 1. crontab -e
 2. @reboot /usr/bin/python3 /home/Azureuser123/flaskApp/azureApp.py
 3. sudo reboot 
