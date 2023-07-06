@@ -1,5 +1,7 @@
 # azure_project
 [Module 07 - Azure Project.pdf](https://github.com/yovelchen/azure_project/files/11929569/Module.07.-.Azure.Project.pdf)
+![rg-gifts-yovel-we](https://github.com/yovelchen/azureProject/assets/134883587/8159e8a0-a14b-41eb-8ba8-4759af2fad19)
+
 
 # azure set up 
 https://github.com/yovelchen/azureProject/tree/main/MyExportedTemplate-rg-gifts-yovel-we
