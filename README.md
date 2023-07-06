@@ -84,3 +84,4 @@ host    all          all            0.0.0.0/0  md5"
 3. chatGPT
 4. https://www.simplified.guide/linux/automatically-run-program-on-startup#running-a-program-automatically-on-linux-startup-via-cron
 5. https://cloud.google.com/community/tutorials/setting-up-postgres-data-disk
+6. Baruchi 
