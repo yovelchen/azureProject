@@ -77,6 +77,10 @@ host    all          all            0.0.0.0/0  md5"
 3. sudo nano ../../etc/postgresql/9.3/main/postgresql.conf
 4. data_directory = '/media/postgres-data/main'
 5. sudo service postgresql start
+
+# change password 
+1. follow this manual: 
+https://community.snowflake.com/s/article/How-to-Configure-Azure-role-based-access-control-RBAC-fro-Azure-Key-Vault-when-setting-up-Tri-Secret-Secure
    
 # credits:
 1. https://www.postgresql.org/download/linux/ubuntu/
