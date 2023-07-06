@@ -9,7 +9,7 @@ DB_HOST = '10.0.2.4'  # Replace with your actual host
 DB_PORT = '5432'  # Replace with your actual port
 DB_NAME = 'flask_db'  # Replace with your actual database name
 DB_USER = 'postgres'  # Replace with your actual username
-DB_PASSWORD = 'Azureuser123'  # Replace with your actual password
+DB_PASSWORD = 'PASSWORD'  # Replace with your actual password
 
 def connect_to_database():
     try:
