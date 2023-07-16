@@ -11,6 +11,10 @@ DB_NAME = 'flask_db'  # Replace with your actual database name
 DB_USER = 'postgres'  # Replace with your actual username
 DB_PASSWORD = 'PASSWORD'  # Replace with your actual password
 
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('azureApp.html')
+
 def connect_to_database():
     try:
         conn = psycopg2.connect(
@@ -109,7 +113,6 @@ def retrieve_data(name):
                 'time': time
             }
         else:
-            response = {
             response = {
                 'status': 'error',
                 'message': 'Data not found for the provided name'
